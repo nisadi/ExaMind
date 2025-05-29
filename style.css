@@ -1,0 +1,160 @@
+:root {
+            --bg-gradient-start: #001986;
+            --bg-gradient-end: #9c0087;
+            --container-bg: rgba(196, 196, 196, 0.9);
+            --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --chat-bg: white;
+            --chat-border: #ddd;
+            --user-msg-bg-start: #e3f2fd;
+            --user-msg-bg-end: #bbdefb;
+            --user-msg-border: #2196F3;
+            --bot-msg-bg-start: #f5f5f5;
+            --bot-msg-bg-end: #e0e0e0;
+            --bot-msg-border: #607d8b;
+            --text-color: #333;
+            --time-color: #666;
+            --input-bg: white;
+            --input-border: #ddd;
+            --btn-success-bg: #15db44;
+            --btn-danger-bg: #c91c5f;
+            --tagline-color: #000000;
+        }
+
+        .dark-mode {
+            --bg-gradient-start: #050033;
+            --bg-gradient-end: #5a0026;
+            --container-bg: rgba(30, 30, 30, 0.9);
+            --container-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --chat-bg: #474747;
+            --chat-border: #444;
+            --user-msg-bg-start: #1a3a6a;
+            --user-msg-bg-end: #0d47a1;
+            --user-msg-border: #1976d2;
+            --bot-msg-bg-start: #2d2d2d;
+            --bot-msg-bg-end: #1e1e1e;
+            --bot-msg-border: #555;
+            --text-color: #e0e0e0;
+            --time-color: #aaa;
+            --input-bg: #2d2d2d;
+            --input-border: #444;
+            --btn-success-bg: #088610;
+            --btn-danger-bg: #8e0038;
+            --tagline-color: #ffffff;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            color: var(--text-color);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--container-shadow);
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        #chatContainer {
+            margin-top: 20px;
+            border: 1px solid var(--chat-border);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            background-color: var(--chat-bg);
+            transition: all 0.3s ease;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-message {
+            background: linear-gradient(to right, var(--user-msg-bg-start), var(--user-msg-bg-end));
+            margin-left: 20%;
+            border-left: 4px solid var(--user-msg-border);
+        }
+
+        .bot-message {
+            background: linear-gradient(to right, var(--bot-msg-bg-start), var(--bot-msg-bg-end));
+            margin-right: 20%;
+            border-left: 4px solid var(--bot-msg-border);
+        }
+
+        .message-time {
+            font-size: 0.8em;
+            color: var(--time-color);
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .input-container {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        #userInput {
+            flex: 1;
+            border-radius: 20px;
+            padding: 12px 20px;
+            border: 1px solid var(--input-border);
+            margin-right: 10px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-success {
+            background-color: var(--btn-success-bg);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+
+        .btn-danger {
+            background-color: var(--btn-danger-bg);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 500;
+        }
+
+        .tagline {
+            color: var(--tagline-color);
+            font-size: 0.9em;
+            margin-top: -10px;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
