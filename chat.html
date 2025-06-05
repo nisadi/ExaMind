@@ -14,11 +14,17 @@
             <div class="header-content">
                 <h2>ExaMind 🤖</h2>
             </div>
-            
             <button class="btn btn-danger" onclick="clearChat()">Clear</button>
         </div>
         <div class="tagline">Synthetic Wisdom Engine.</div>
         <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+        
+        <div class="mode-toggle">
+            <span>Response Mode: </span>
+            <button id="conciseMode" class="btn btn-primary btn-mode" onclick="setResponseMode('concise')">Concise</button>
+            <button id="detailedMode" class="btn btn-secondary btn-mode" onclick="setResponseMode('detailed')">Detailed</button>
+        </div>
+        
         <div id="chatContainer"></div>
         <div class="input-container">
             <input 
@@ -32,47 +38,16 @@
     </div>
 
     <script>
-        // Initialize chat from localStorage
-        document.addEventListener('DOMContentLoaded', loadChatHistory);
-
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const userMessage = input.value.trim();
-            
-            if (!userMessage) return;
-            
-            // Add user message immediately
-            addMessage('user', userMessage);
-            input.value = '';
-            
-            try {
-                // Get response without loading indicator
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": "Bearer YOUR_API_KEY",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [{
-                            role: "system", 
-                            content: "Respond in 1-2 short sentences maximum. Be direct and concise."
-                        },{
-                            role: "user",
-                            content: userMessage
-                        }]
-                    })
-                });
-                
-                const data = await response.json();
-                const responseText = data.choices?.[0]?.message?.content;
-                addMessage('bot', responseText);
-                
-            } catch(error) {
-                addMessage('bot', "Error getting response");
-            }
-        }
+        // Initialize variables
+        let responseMode = 'concise'; // Default mode
+        
+        // Initialize chat, theme, and mode from localStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChatHistory();
+            loadThemePreference();
+            loadResponseMode();
+            updateModeButtons();
+        });
 
         // Theme management
         function loadThemePreference() {
@@ -88,18 +63,31 @@
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
         }
 
-        // Rest of your functions remain the same
-        function addMessage(role, content) {
-            const chatContainer = document.getElementById('chatContainer');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${role}-message`;
-            messageDiv.innerHTML = `
-                <div><strong>${role === 'user' ? 'You' : 'Bot'}:</strong></div>
-                <div>${role === 'bot' ? marked.parse(content) : content}</div>
-                <div class="message-time">${new Date().toLocaleTimeString()}</div>
-            `;
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        // Response mode management
+        function loadResponseMode() {
+            const savedMode = localStorage.getItem('responseMode');
+            if (savedMode) {
+                responseMode = savedMode;
+            }
+        }
+
+        function setResponseMode(mode) {
+            responseMode = mode;
+            localStorage.setItem('responseMode', mode);
+            updateModeButtons();
+        }
+
+        function updateModeButtons() {
+            document.getElementById('conciseMode').classList.remove('btn-primary', 'btn-secondary');
+            document.getElementById('detailedMode').classList.remove('btn-primary', 'btn-secondary');
+            
+            if (responseMode === 'concise') {
+                document.getElementById('conciseMode').classList.add('btn-primary');
+                document.getElementById('detailedMode').classList.add('btn-secondary');
+            } else {
+                document.getElementById('conciseMode').classList.add('btn-secondary');
+                document.getElementById('detailedMode').classList.add('btn-primary');
+            }
         }
 
         // Load chat history from localStorage
@@ -142,9 +130,14 @@
                     <div class="message-time">${time}</div>
                 `;
             } else {
+                // Only clean responses in concise mode
+                let displayContent = content;
+                if (responseMode === 'concise') {
+                    displayContent = cleanResponse(content);
+                }
                 messageDiv.innerHTML = `
                     <div><strong>Bot:</strong></div>
-                    <div>${marked.parse(content)}</div>
+                    <div>${marked.parse(displayContent)}</div>
                     <div class="message-time">${time}</div>
                 `;
             }
@@ -152,6 +145,59 @@
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
             saveChat();
+        }
+
+        // Clean response for concise mode
+        function cleanResponse(content) {
+            // Remove thinking patterns
+            let cleanResponse = content.replace('/^(.*?)(?:\b(?:Bot:|Alright,|Okay,|I need to|Maybe|Lets|Final Answer:?)\b.*?(\n|$)/gmi, ');
+            
+            // If the cleaned response is empty, return the original
+            if (!cleanResponse.trim()) {
+                return content;
+            }
+            
+            return cleanResponse.trim();
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Get conversation history with appropriate system prompt
+        function getConversationHistory() {
+            const chatContainer = document.getElementById('chatContainer');
+            const messages = [
+                {
+                    role: "system",
+                    content: responseMode === 'concise' 
+                        ? "Respond in 1-2 short sentences maximum. Be direct and concise. NEVER explain your thought process or reasoning."
+                        : "Provide detailed explanations when appropriate. Break down complex concepts and give thorough answers."
+                }
+            ];
+            
+            const messageElements = chatContainer.getElementsByClassName('message');
+            
+            for (let element of messageElements) {
+                const role = element.classList.contains('user-message') ? 'user' : 'assistant';
+                const contentDiv = element.querySelector('div:nth-child(2)');
+                let content = '';
+                
+                if (role === 'user') {
+                    content = contentDiv.textContent;
+                } else {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = contentDiv.innerHTML;
+                    content = tempDiv.textContent || tempDiv.innerText || '';
+                }
+                
+                messages.push({ role, content });
+            }
+            
+            return messages;
         }
 
         // Send message to API
@@ -168,6 +214,7 @@
             input.value = '';
             
             try {
+                // Add loading indicator
                 const loadingDiv = document.createElement('div');
                 loadingDiv.className = 'message bot-message';
                 loadingDiv.innerHTML = '<div><strong>Bot:</strong></div><div>Thinking...</div>';
@@ -176,14 +223,21 @@
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": "Bearer Your OpenRouter API Key",
-                        "Content-Type": "application/json"
+                        "Authorization": "Bearer Your-API-Key", // Replace with your key
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": window.location.href,
+                        "X-Title": "ExaMind"
                     },
                     body: JSON.stringify({
                         model: 'deepseek/deepseek-r1:free',
-                        messages: getConversationHistory()
+                        messages: getConversationHistory(),
+                        temperature: responseMode === 'concise' ? 0.3 : 0.7
                     })
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
                 
                 const data = await response.json();
                 const chatContainer = document.getElementById('chatContainer');
@@ -194,29 +248,12 @@
                 
             } catch(error) {
                 const chatContainer = document.getElementById('chatContainer');
-                chatContainer.removeChild(chatContainer.lastChild);
+                if (chatContainer.lastChild && chatContainer.lastChild.innerHTML.includes('Thinking...')) {
+                    chatContainer.removeChild(chatContainer.lastChild);
+                }
                 addMessage('bot', `Error: ${error.message}`);
-                console.error(error);
+                console.error('API Error:', error);
             }
-        }
-
-        // Get conversation history for API
-        function getConversationHistory() {
-            const chatContainer = document.getElementById('chatContainer');
-            const messages = [];
-            const messageElements = chatContainer.getElementsByClassName('message');
-            
-            for (let element of messageElements) {
-                const role = element.classList.contains('user-message') ? 'user' : 'assistant';
-                const contentDiv = element.getElementsByTagName('div')[1];
-                const content = role === 'user' ? contentDiv.textContent : contentDiv.innerHTML;
-                const contentText = role === 'user' ? content : 
-                    new DOMParser().parseFromString(content, 'text/html').body.textContent || content;
-                
-                messages.push({ role, content: contentText });
-            }
-            
-            return messages;
         }
     </script>
 </body>
