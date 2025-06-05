@@ -1,39 +1,55 @@
-GitHub Repository Description
+ExaMind 🤖  
 
-ExaMind - AI-Powered Chatbot 🤖💡
+Synthetic Wisdom Engine with Adaptive Response Modes 
 
-ExaMind is a sleek, responsive AI chatbot built with HTML, CSS, and JavaScript, powered by the OpenRouter API (using the DeepSeek-R1 model). Designed for seamless user interaction, it features:
-
-
-✨ Key Features:
-
-AI-Powered Conversations: Real-time, concise responses with markdown support.
-
-Dark/Light Mode: Toggleable themes with CSS variables for optimal readability.
-
-Persistent Chat History: Messages saved via localStorage for continuity.
-
-Clean UI: Modern gradient design with responsive message bubbles.
-
-Quick Actions: Clear chat button and keyboard shortcuts (Enter to send).
+A smart chat interface that dynamically switches between **concise answers** and **detailed explanations** based on user preference. Built with vanilla JavaScript and powered by OpenRouter's AI API.  
 
 
-🛠 Tech Stack:
-
-Frontend: HTML5, CSS3, JavaScript
-
-API: OpenRouter (DeepSeek-R1 model)
-
-Libraries: Marked.js (Markdown parsing), Bootstrap (responsive layout)
-
-
-🚀 Use Cases:
-
-Personal AI assistant
-
-Lightweight customer support demo
-
-Educational tool for API integrations
+🌟 Features  
+  
+Adaptive Responses - Toggle between "Concise" (1-2 sentences) or "Detailed" (in-depth explanations) modes  
+Persistent Memory - Saves chat history and preferences using `localStorage` 
+Markdown Support - Rendered responses with lists, code blocks, and formatting via `marked.js` 
+Dark/Light Theme - Eye-friendly theme toggle 
+API Flexibility - Easily switch AI models (default: DeepSeek-R1)   
 
 
-📌 Note: Replace the API key in script.js with your own OpenRouter key.
+🛠️ Technologies  
+
+- Frontend: HTML5, CSS3, JavaScript (ES6+)  
+- UI Framework: Bootstrap 4  
+- Markdown: [marked.js](https://marked.js.org/)  
+- AI API: [OpenRouter](https://openrouter.ai/)  
+- Deployment: GitHub Pages (optional)
+
+
+⚙️ Configuration
+
+🔄 Response Modes
+
+Mode	Trigger	Behavior
+
+Concise	Default	Short, direct answers (optimized for quick info)
+
+Detailed	Manual toggle	Explanations with examples and reasoning
+
+
+🌗 Theme Settings
+
+Automatically saves user’s light/dark preference.
+
+
+🤖 API Integration
+
+ExaMind uses OpenRouter’s unified AI API. Supported models:
+
+deepseek/deepseek-r1:free (default)
+
+anthropic/claude-3-sonnet
+
+openai/gpt-4
+
+
+
+
+
